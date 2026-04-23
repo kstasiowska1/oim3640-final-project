@@ -1,19 +1,24 @@
 {% extends "base.html" %}
 
+{% block title %}Results | FlipFinder{% endblock %}
+
 {% block content %}
-    <h1>Deal Results</h1>
+<h2>Results for "{{ location }}"</h2>
 
-    <p><strong>Purchase Price:</strong> ${{ "{:,.2f}".format(purchase_price) }}</p>
-    <p><strong>Repair Costs:</strong> ${{ "{:,.2f}".format(rehab_cost) }}</p>
-    <p><strong>Expected Sale Price:</strong> ${{ "{:,.2f}".format(sale_price) }}</p>
-    <p><strong>Holding Costs:</strong> ${{ "{:,.2f}".format(holding_costs) }}</p>
-
-    <hr>
-
-    <p><strong>Total Cost:</strong> ${{ "{:,.2f}".format(total_cost) }}</p>
-    <p><strong>Profit:</strong> ${{ "{:,.2f}".format(profit) }}</p>
-    <p><strong>ROI:</strong> {{ "{:.2f}".format(roi) }}%</p>
-
-    <br>
-    <a href="/">Analyze another deal</a>
+{% if properties %}
+    <div class="results-grid">
+        {% for property in properties %}
+            <div class="card">
+                <img src="{{ property.image }}" alt="Property image">
+                <h3>{{ property.address }}</h3>
+                <p><strong>Price:</strong> ${{ "{:,.0f}".format(property.price) }}</p>
+                <p><strong>Beds/Baths:</strong> {{ property.beds }} / {{ property.baths }}</p>
+                <p><strong>Square Feet:</strong> {{ "{:,.0f}".format(property.sqft) }}</p>
+                <a class="button-link" href="{{ url_for('analyze', property_id=property.id) }}">Analyze Deal</a>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No properties found.</p>
+{% endif %}
 {% endblock %}

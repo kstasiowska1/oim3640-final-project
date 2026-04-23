@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Analyze Deal | FlipFinder{% endblock %}
+
+{% block content %}
+{% if property %}
+    <div class="analysis-page">
+        <div class="property-summary card">
+            <img src="{{ property.image }}" alt="Property image">
+            <h2>{{ property.address }}</h2>
+            <p><strong>List Price:</strong> ${{ "{:,.0f}".format(property.price) }}</p>
+            <p><strong>Beds/Baths:</strong> {{ property.beds }} / {{ property.baths }}</p>
+            <p><strong>Square Feet:</strong> {{ "{:,.0f}".format(property.sqft) }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Run Flip Analysis</h3>
+            <form method="post" class="analysis-form">
+                <label for="purchase_price">Purchase Price</label>
+                <input
+                    type="number"
+                    id="purchase_price"
+                    name="purchase_price"
+                    step="0.01"
+                    value="{{ property.price }}"
+                    required
+                >
+
+                <label for="rehab_cost">Rehab Cost</label>
+                <input
+                    type="number"
+                    id="rehab_cost"
+                    name="rehab_cost"
+                    step="0.01"
+                    required
+                >
+
+                <label for="resale_value">Estimated Resale Value</label>
+                <input
+                    type="number"
+                    id="resale_value"
+                    name="resale_value"
+                    step="0.01"
+                    required
+                >
+
+                <label for="extra_costs">Extra Costs</label>
+                <input
+                    type="number"
+                    id="extra_costs"
+                    name="extra_costs"
+                    step="0.01"
+                    value="0"
+                >
+
+                <button type="submit">Calculate</button>
+            </form>
+        </div>
+
+        {% if analysis %}
+            <div class="card results-box">
+                <h3>Deal Analysis Results</h3>
+                <p><strong>Total Cost:</strong> ${{ "{:,.2f}".format(analysis.total_cost) }}</p>
+                <p><strong>Estimated Profit:</strong> ${{ "{:,.2f}".format(analysis.profit) }}</p>
+                <p><strong>ROI:</strong> {{ "{:.2f}".format(analysis.roi) }}%</p>
+                <p><strong>Rating:</strong> {{ analysis.rating }}</p>
+            </div>
+        {% endif %}
+    </div>
+{% else %}
+    <p>Property not found.</p>
+{% endif %}
+{% endblock %}

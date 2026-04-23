@@ -52,16 +52,13 @@ def extract_image_url(property_data):
     return "https://via.placeholder.com/300x200?text=No+Image"
 
 def extract_sqft(property_data):
-    """
-    Try many possible square-footage fields from the API.
-    """
     possible_keys = [
         "sqft",
         "livingArea",
         "living_area",
         "area",
-        "size",
-        "squareFootage"
+        "squareFootage",
+        "building_size"
     ]
 
     for key in possible_keys:
@@ -75,10 +72,19 @@ def extract_sqft(property_data):
             if cleaned.isdigit():
                 return int(cleaned)
 
-    # nested places
+        if isinstance(value, dict):
+            for subkey in ["size", "sqft", "value"]:
+                subvalue = value.get(subkey)
+                if isinstance(subvalue, (int, float)):
+                    return subvalue
+                if isinstance(subvalue, str):
+                    cleaned = subvalue.replace(",", "").strip()
+                    if cleaned.isdigit():
+                        return int(cleaned)
+
     description = property_data.get("description")
     if isinstance(description, dict):
-        for subkey in ["sqft", "livingArea", "area", "value"]:
+        for subkey in ["sqft", "livingArea", "value"]:
             value = description.get(subkey)
             if isinstance(value, (int, float)):
                 return value
@@ -87,7 +93,7 @@ def extract_sqft(property_data):
                 if cleaned.isdigit():
                     return int(cleaned)
 
-    return 0
+    return None
 
 
 def extract_price(property_data):

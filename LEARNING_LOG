@@ -1,0 +1,48 @@
+## Date: 2026-04-15
+**What I asked AI to do:**
+- Help me refine my project proposal into something I can do in a python web app and help structure the application
+- Suggest what files I would need for this Flask web app (routes, templates, services)
+- Help me think through how to organize the app so it would be easy to build and scale
+
+**What I didn't understand in the generated code:**
+- I wasn’t fully sure if I needed different files that mini project 3
+- I was unsure how complex my project structure should be for a class assignment
+
+**What I learned:**
+- A Flask app should be structured into various different files and folders
+- Planning the file structure early makes development much easier later
+- It’s important to keep the initial version simple and add more features gradually
+
+## Date: 2026-04-22
+**What I asked AI to do:**
+- Help me integrate a real estate API into my Flask app
+- Help me debug errors related to API requests and incorrect endpoints
+
+**What I didn't understand in the generated code:**
+- I was confused about why certain API endpoints were not working
+- I didn’t fully understand how to find the correct fields inside the JSON response
+- I was unsure how to map API data into a format my app could use
+
+**What I learned:**
+- API endpoints must match exactly what is shown in the documentation
+- JSON data structures can vary, so it’s important to inspect the response before using it
+- Using print statements to debug API responses is very helpful
+- Data often needs to be cleaned and reformatted before being used in an application
+
+## Date: 2026-04-23
+**What I asked AI to do:**
+- Help me troubleshoot issues with displaying property data (images and square footage)
+- Help me redesign the app flow to separate the analysis input page and results page
+- Suggest improvements to the layout and styling of the application
+- Help me implement colored conditional formatting for deal results (green, yellow, red)
+
+**What I didn't understand in the generated code:**
+- I wasn’t sure why some data fields (like square footage) were missing or showing as zero
+- I didn’t fully understand how to extract nested values from API responses
+- I was unsure how to properly structure multiple pages and routes in Flask
+
+**What I learned:**
+- API data often uses different field names, so it’s important to inspect real examples
+- Nested dictionaries require careful access to retrieve the correct values
+- Splitting the app into multiple pages improves organization
+- Small UI changes like color coding can make results much easier to interpret

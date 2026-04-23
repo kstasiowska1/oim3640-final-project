@@ -125,7 +125,6 @@ def search_properties(location):
         cleaned_properties = []
 
         for i, property_data in enumerate(raw_properties, start=1):
-            
             cleaned_property = {
                 "id": i,
                 "address": property_data.get("address", "No address available"),
@@ -135,7 +134,7 @@ def search_properties(location):
                 "sqft": extract_sqft(property_data),
                 "image": extract_image_url(property_data)
             }
-        cleaned_properties.append(cleaned_property)
+            cleaned_properties.append(cleaned_property)
 
         cached_properties = cleaned_properties
         return cleaned_properties

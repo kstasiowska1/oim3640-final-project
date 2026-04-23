@@ -1,47 +1,93 @@
-sample_properties = [
-    {
-        "id": 1,
-        "address": "123 Main St, Boston, MA",
-        "price": 350000,
-        "beds": 3,
-        "baths": 2,
-        "sqft": 1450,
-        "image": "https://via.placeholder.com/300x200?text=House+1"
-    },
-    {
-        "id": 2,
-        "address": "45 Oak Ave, Cambridge, MA",
-        "price": 425000,
-        "beds": 4,
-        "baths": 3,
-        "sqft": 1800,
-        "image": "https://via.placeholder.com/300x200?text=House+2"
-    },
-    {
-        "id": 3,
-        "address": "78 River Rd, Somerville, MA",
-        "price": 299000,
-        "beds": 2,
-        "baths": 1,
-        "sqft": 1200,
-        "image": "https://via.placeholder.com/300x200?text=House+3"
-    }
-]
+import os
+import requests
+from dotenv import load_dotenv
 
+load_dotenv()
+
+RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
+RAPIDAPI_HOST = os.getenv("RAPIDAPI_HOST")
+
+# This stores the latest search results so get_property_by_id can find them
+cached_properties = []
+
+def extract_image_url(property_data):
+    """
+    Try different possible image formats from the API.
+    """
+    primary_photo = property_data.get("primaryPhoto")
+
+    if isinstance(primary_photo, str):
+        return primary_photo
+
+    if isinstance(primary_photo, dict):
+        if primary_photo.get("href"):
+            return primary_photo.get("href")
+
+    photos = property_data.get("photos")
+    if isinstance(photos, list) and len(photos) > 0:
+        first_photo = photos[0]
+        if isinstance(first_photo, str):
+            return first_photo
+        if isinstance(first_photo, dict) and first_photo.get("href"):
+            return first_photo.get("href")
+
+    return "https://via.placeholder.com/300x200?text=No+Image"
 
 def search_properties(location):
     """
-    Return sample properties for now.
-    Later this function will call the real API.
+    Search for properties using the RapidAPI real estate endpoint.
+    Returns a clean list of property dictionaries for the app.
     """
-    return sample_properties
+    global cached_properties
+
+    url = f"https://{RAPIDAPI_HOST}/search"
+
+    headers = {
+        "X-RapidAPI-Key": RAPIDAPI_KEY,
+        "X-RapidAPI-Host": RAPIDAPI_HOST
+    }
+
+    params = {
+        "location": location
+    }
+
+    try:
+        response = requests.get(url, headers=headers, params=params, timeout=15)
+        response.raise_for_status()
+        data = response.json()
+
+        print("API RESPONSE:")
+        print(data)
+
+        raw_properties = data.get("data", [])
+
+        cleaned_properties = []
+
+        for i, property_data in enumerate(raw_properties, start=1):
+            cleaned_property = {
+                "id": i,
+                "address": property_data.get("address", "No address available"),
+                "price": property_data.get("price", 0),
+                "beds": property_data.get("beds", 0),
+                "baths": property_data.get("baths", 0),
+                "sqft": property_data.get("sqft", 0),
+                "image": extract_image_url(property_data)
+            }
+            cleaned_properties.append(cleaned_property)
+
+        cached_properties = cleaned_properties
+        return cleaned_properties
+
+    except Exception as e:
+        print(f"Error calling API: {e}")
+        return []
 
 
 def get_property_by_id(property_id):
     """
-    Find one property by its id.
+    Return one property from the latest cached search results.
     """
-    for property_data in sample_properties:
+    for property_data in cached_properties:
         if property_data["id"] == property_id:
             return property_data
     return None

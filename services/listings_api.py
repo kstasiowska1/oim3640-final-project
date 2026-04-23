@@ -12,24 +12,98 @@ cached_properties = []
 
 def extract_image_url(property_data):
     """
-    Try different possible image formats from the API.
+    Try many possible image formats from the API.
     """
-    primary_photo = property_data.get("primaryPhoto")
+    possible_keys = [
+        "primaryPhoto",
+        "primary_photo",
+        "thumbnail",
+        "photo",
+        "imgSrc",
+        "image",
+        "image_url"
+    ]
 
-    if isinstance(primary_photo, str):
-        return primary_photo
+    for key in possible_keys:
+        value = property_data.get(key)
 
-    if isinstance(primary_photo, dict):
-        if primary_photo.get("href"):
-            return primary_photo.get("href")
+        if isinstance(value, str) and value.startswith("http"):
+            return value
+
+        if isinstance(value, dict):
+            for subkey in ["href", "url", "src"]:
+                subvalue = value.get(subkey)
+                if isinstance(subvalue, str) and subvalue.startswith("http"):
+                    return subvalue
 
     photos = property_data.get("photos")
-    if isinstance(photos, list) and len(photos) > 0:
+    if isinstance(photos, list) and photos:
         first_photo = photos[0]
-        if isinstance(first_photo, str):
+
+        if isinstance(first_photo, str) and first_photo.startswith("http"):
             return first_photo
-        if isinstance(first_photo, dict) and first_photo.get("href"):
-            return first_photo.get("href")
+
+        if isinstance(first_photo, dict):
+            for subkey in ["href", "url", "src"]:
+                subvalue = first_photo.get(subkey)
+                if isinstance(subvalue, str) and subvalue.startswith("http"):
+                    return subvalue
+
+    return "https://via.placeholder.com/300x200?text=No+Image"
+
+def extract_sqft(property_data):
+    """
+    Try many possible square-footage fields from the API.
+    """
+    possible_keys = [
+        "sqft",
+        "livingArea",
+        "living_area",
+        "area",
+        "size",
+        "squareFootage"
+    ]
+
+    for key in possible_keys:
+        value = property_data.get(key)
+
+        if isinstance(value, (int, float)):
+            return value
+
+        if isinstance(value, str):
+            cleaned = value.replace(",", "").strip()
+            if cleaned.isdigit():
+                return int(cleaned)
+
+    # nested places
+    description = property_data.get("description")
+    if isinstance(description, dict):
+        for subkey in ["sqft", "livingArea", "area", "value"]:
+            value = description.get(subkey)
+            if isinstance(value, (int, float)):
+                return value
+            if isinstance(value, str):
+                cleaned = value.replace(",", "").strip()
+                if cleaned.isdigit():
+                    return int(cleaned)
+
+    return 0
+
+
+def extract_price(property_data):
+    value = property_data.get("price", 0)
+
+    if isinstance(value, (int, float)):
+        return value
+
+    if isinstance(value, str):
+        cleaned = value.replace("$", "").replace(",", "").strip()
+        try:
+            return float(cleaned)
+        except ValueError:
+            return 0
+
+    return 0
 
     return "https://via.placeholder.com/300x200?text=No+Image"
 

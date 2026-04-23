@@ -21,25 +21,36 @@ def search():
     return render_template("results.html", location=location, properties=properties)
 
 
-@app.route("/analyze/<int:property_id>", methods=["GET", "POST"])
+@app.route("/analyze/<int:property_id>")
 def analyze(property_id):
     property_data = get_property_by_id(property_id)
-    analysis = None
 
-    if request.method == "POST":
-        purchase_price = float(request.form.get("purchase_price", 0))
-        rehab_cost = float(request.form.get("rehab_cost", 0))
-        resale_value = float(request.form.get("resale_value", 0))
-        extra_costs = float(request.form.get("extra_costs", 0))
+    if property_data is None:
+        return render_template("analysis.html", property=None)
 
-        analysis = analyze_flip(
-            purchase_price=purchase_price,
-            rehab_cost=rehab_cost,
-            resale_value=resale_value,
-            extra_costs=extra_costs
-        )
+    return render_template("analysis.html", property=property_data)
 
-    return render_template("analysis.html", property=property_data, analysis=analysis)
+
+@app.route("/deal-result/<int:property_id>", methods=["POST"])
+def deal_result(property_id):
+    property_data = get_property_by_id(property_id)
+
+    if property_data is None:
+        return render_template("deal_result.html", property=None, analysis=None)
+
+    purchase_price = float(request.form.get("purchase_price", 0))
+    rehab_cost = float(request.form.get("rehab_cost", 0))
+    resale_value = float(request.form.get("resale_value", 0))
+    extra_costs = float(request.form.get("extra_costs", 0))
+
+    analysis = analyze_flip(
+        purchase_price=purchase_price,
+        rehab_cost=rehab_cost,
+        resale_value=resale_value,
+        extra_costs=extra_costs
+    )
+
+    return render_template("deal_result.html", property=property_data, analysis=analysis)
 
 
 if __name__ == "__main__":

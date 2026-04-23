@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Deal Results | FlipFinder{% endblock %}
+
+{% block content %}
+{% if property and analysis %}
+    <div class="result-page">
+        <div class="property-card">
+            <img src="{{ property.image }}" alt="Property image" class="property-image">
+
+            <div class="property-info">
+                <h2>{{ property.address }}</h2>
+                <p><strong>List Price:</strong> ${{ "{:,.0f}".format(property.price) }}</p>
+                <p><strong>Beds/Baths:</strong> {{ property.beds }} / {{ property.baths }}</p>
+                <p>
+                    <strong>Square Feet:</strong>
+                    {% if property.sqft %}
+                        {{ "{:,.0f}".format(property.sqft) }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="result-card {{ analysis.color_class }}">
+            <h3>Flip Analysis Result</h3>
+            <p><strong>Total Cost:</strong> ${{ "{:,.2f}".format(analysis.total_cost) }}</p>
+            <p><strong>Estimated Profit:</strong> ${{ "{:,.2f}".format(analysis.profit) }}</p>
+            <p><strong>ROI:</strong> {{ "{:.2f}".format(analysis.roi) }}%</p>
+            <p><strong>Rating:</strong> {{ analysis.rating }}</p>
+        </div>
+
+        <a href="{{ url_for('analyze', property_id=property.id) }}" class="button-link">Back to Analysis</a>
+    </div>
+{% else %}
+    <p>Could not generate analysis.</p>
+{% endif %}
+{% endblock %}

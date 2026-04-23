@@ -29,7 +29,7 @@ cd oim3640-final-project"
 
 ### 3. Create an .env file and add two API keys
 - Mapbox API Key
-- RapidAI API Key
+- RapidAI Real Estate API Key
 
 ### 4. Run the app
 "python app.py"
